@@ -7,22 +7,24 @@ Dotenv.load()
 
 module Api
   class VisitorsController < ApplicationController
-    protect_from_forgery with: :null_session
     before_filter :init_db
 
     def init_db
+      if (!@db.nil?)
+        return
+      end
       if ENV['VCAP_SERVICES']
         begin
           svcs = JSON.parse ENV['VCAP_SERVICES']
           cloudant = svcs.detect { |k,v| k =~ /^cloudantNoSQLDB/ }.last.first
           creds = cloudant['credentials']
-          @db = get_couch_db(creds)
+          @db = get_couch_db(creds['url'])
         rescue
           puts 'No database found'
         end
       else
         if ENV['CLOUDANT_URL']
-          @db = CouchRest.database!(ENV['CLOUDANT_URL'])
+          @db = get_couch_db(ENV['CLOUDANT_URL'])
         end
       end
       if(!@db.nil?)
@@ -33,8 +35,7 @@ module Api
     # Helper function to construct the proper URL
     # to the Couch DB.
     # URL should be http(s)://username:password@user.cloudant.com/mydb
-    def get_couch_db(creds)
-      url = creds['url']
+    def get_couch_db(url)
       if !url.end_with?('/')
         url = url + '/'
       end
