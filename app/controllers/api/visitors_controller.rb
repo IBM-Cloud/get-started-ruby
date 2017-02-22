@@ -12,10 +12,14 @@ module Api
 
     def init_db
       if ENV['VCAP_SERVICES']
-        svcs = JSON.parse ENV['VCAP_SERVICES']
-        cloudant = svcs.detect { |k,v| k =~ /^cloudantNoSQLDB/ }.last.first
-        creds = cloudant['credentials']
-        @db = get_couch_db(creds)
+        begin
+          svcs = JSON.parse ENV['VCAP_SERVICES']
+          cloudant = svcs.detect { |k,v| k =~ /^cloudantNoSQLDB/ }.last.first
+          creds = cloudant['credentials']
+          @db = get_couch_db(creds)
+        rescue
+          puts 'No database found'
+        end
       else
         if ENV['CLOUDANT_URL']
           @db = CouchRest.database!(ENV['CLOUDANT_URL'])
