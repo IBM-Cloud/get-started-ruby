@@ -11,23 +11,24 @@ module Api
     before_filter :init_db
 
     def init_db
-      if ENV['VCAP_SERVICES']
-        begin
-          svcs = JSON.parse ENV['VCAP_SERVICES']
-          cloudant = svcs.detect { |k,v| k =~ /^cloudantNoSQLDB/ }.last.first
-          creds = cloudant['credentials']
-          @db = get_couch_db(creds)
-        rescue
-          puts 'No database found'
-        end
+      if @db
+        create_view(@db)
       else
-        if ENV['CLOUDANT_URL']
-          @db = CouchRest.database!(ENV['CLOUDANT_URL'])
+	    if ENV['VCAP_SERVICES']
+          begin
+            svcs = JSON.parse ENV['VCAP_SERVICES']
+            cloudant = svcs.detect { |k,v| k =~ /^cloudantNoSQLDB/ }.last.first
+            creds = cloudant['credentials']
+            @db = get_couch_db(creds)
+          rescue
+            puts 'No database found'
+        else
+          if ENV['CLOUDANT_URL']
+            @db = CouchRest.database!(ENV['CLOUDANT_URL'])
+          end
         end
+		create_view(@db)
       end
-      if(!@db.nil?)
-       create_view(@db)
-     end
     end
 
     # Helper function to construct the proper URL
