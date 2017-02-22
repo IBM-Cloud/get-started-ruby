@@ -10,7 +10,7 @@ module Api
     before_filter :init_db
 
     def init_db
-      if (!@db.nil?)
+      if @db
         return
       end
       if ENV['VCAP_SERVICES']
@@ -27,7 +27,7 @@ module Api
           @db = get_couch_db(ENV['CLOUDANT_URL'])
         end
       end
-      if(!@db.nil?)
+      if @db
        create_view(@db)
      end
     end
@@ -71,7 +71,7 @@ module Api
     # */
     def create
       userName = params[:name]
-      if @db.nil?
+      if !@db
         render text: "Hello " + userName + "!"
       else
         response = @db.save_doc({"name": userName})
@@ -91,7 +91,7 @@ module Api
     #  * @return An array of all the visitor names
     #  */
     def index
-      if @db.nil?
+      if !@db
         render json: [], status: 200
       else
         docs = @db.all_docs(params={"include_docs":"true"})["rows"]
