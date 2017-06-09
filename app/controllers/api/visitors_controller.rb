@@ -2,6 +2,7 @@ require 'couchrest'
 require 'rubygems'
 require 'json'
 require 'dotenv/rails'
+require_relative '../../../lib/anti_xss.rb'
 
 Dotenv.load()
 
@@ -66,11 +67,11 @@ module Api
     # /* Endpoint to greet and add a new visitor to database.
     # * Send a POST request to localhost:3000/api/visitors with body
     # * {
-    # * 	"name": "Bob"
+    # *     "name": "Bob"
     # * }
     # */
     def create
-      userName = params[:name]
+      userName = AntiXSS::sanitize_input(params[:name])
       if !@db
         render text: "Hello " + userName + "!"
       else
