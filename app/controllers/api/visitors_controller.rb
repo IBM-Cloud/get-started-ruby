@@ -75,7 +75,7 @@ module Api
       if !@db
         render text: "Hello " + userName + "!"
       else
-        response = @db.save_doc({"name": userName})
+        response = @db.save_doc({"name": params[:name]})
         render text: "Hello " + userName + "! I added you to the database."
       end
     end
@@ -96,7 +96,7 @@ module Api
         render json: [], status: 200
       else
         docs = @db.all_docs(params={"include_docs":"true"})["rows"]
-        names = docs.map { |d| d["doc"]["name"] }
+        names = docs.map { |d| AntiXSS::sanitize_input(d["doc"]["name"]) }
         render json: JSON.dump(names), status: 200
       end
     end
