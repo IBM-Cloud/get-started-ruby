@@ -66,7 +66,7 @@ module Api
     # /* Endpoint to greet and add a new visitor to database.
     # * Send a POST request to localhost:3000/api/visitors with body
     # * {
-    # * 	"name": "Bob"
+    # *     "name": "Bob"
     # * }
     # */
     def create
