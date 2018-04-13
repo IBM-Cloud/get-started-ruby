@@ -20,7 +20,7 @@ You'll need the following:
 
 Now you're ready to start working with the app. Clone the repo and change the directory to where the sample app is located.
 ```
-git clone https://github.com/IBM-Bluemix/get-started-ruby
+git clone https://github.com/IBM-Cloud/get-started-ruby
 cd get-started-ruby
 ```
 
