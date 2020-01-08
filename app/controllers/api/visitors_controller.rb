@@ -8,23 +8,11 @@ Dotenv.load()
 module Api
   class VisitorsController < ApplicationController
     before_filter :init_db
-	
-	at_exit do
-	  puts 'deleting db'
-	  url = ENV['CLOUDANT_URL']
-	  if !url.end_with?('/')
-        url = url + '/'
-      end
-      url = url + 'mydb'
-      CouchRest.delete(url)
-	end
-	
+
     def init_db
       if @db
-        puts 'returning beause db exists'
         return
       end
-      puts 'creating db'
       if ENV['VCAP_SERVICES']
         begin
           svcs = JSON.parse ENV['VCAP_SERVICES']
